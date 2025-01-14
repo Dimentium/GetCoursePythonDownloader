@@ -1,6 +1,5 @@
 import os
 import re
-import sys
 import tempfile
 import aiohttp
 import asyncio
@@ -115,7 +114,7 @@ def convert_to_mp4(result_file, max_retries=3):
 
                 retry_count += 1
                 if retry_count < max_retries:
-                    print(f"Повторная попытка через 5 секунд...")
+                    print("Повторная попытка через 5 секунд...")
                     time.sleep(5)
                 else:
                     print(
@@ -131,7 +130,7 @@ def convert_to_mp4(result_file, max_retries=3):
 
             retry_count += 1
             if retry_count < max_retries:
-                print(f"Повторная попытка через 5 секунд...")
+                print("Повторная попытка через 5 секунд...")
                 time.sleep(5)
             else:
                 print(
