@@ -255,6 +255,7 @@ def har_parser(filename):
     """Read and print the contents of a file."""
     try:
         with open(filename, "r") as file:
+
             data = json.load(file)
             if "log" in data and "entries" in data["log"]:
                 playlist_urls = []
@@ -311,6 +312,7 @@ def starter():
                     asyncio.run(main(url, result_file, args.no_pre_download))
 
                 os.rename(filename, filename + ".done")
+
     else:
         while True:
             url = input("Введите ссылку на плей-лист: ")
