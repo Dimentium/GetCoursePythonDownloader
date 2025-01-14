@@ -1,5 +1,32 @@
 # GetCoursePythonDownloader
 
+Форк с поддержкой загрузки ссылок из [.har](https://en.wikipedia.org/wiki/HAR_(file_format)) файла и запуском через [uvx](https://docs.astral.sh/uv/#tool-management)
+
+## Запуск без установки:
+
+`uvx --from git+https://github.com/Dimentium/GetCoursePythonDownloader getcourse`
+
+## Установка для запуска командой `getcourse`: 
+
+`uv tool install git+https://github.com/Dimentium/GetCoursePythonDownloader`
+
+## Аргументы
+
+- `-a` - обработка всех `*.har` файлов в текущей директории - после обработки файл переименовывается в `*.har.done`
+- `-f <name_of_har_file>` - скачивание ссылок из конкретного `.har` файла - после обработки файл НЕ переименовывается
+
+## Как получить .har файл
+
+### Firefox
+
+![Firefox screenshot](har_firefox.png)
+
+### Safari
+
+![Safari screenshot](har_safari.png)
+
+# Оригинальное описание
+
 Этот скрипт предназначен для загрузки видео с платформы GetCourse и основан на [этом скрипте](https://github.com/mikhailnov/getcourse-video-downloader). Он загружает сегменты видео, объединяет их и конвертирует в формат MP4.
 
 ## Особенности
