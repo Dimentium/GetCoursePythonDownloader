@@ -8,6 +8,7 @@ from tqdm import tqdm
 import subprocess
 import argparse
 import time
+import json
 
 MAX_PARALLEL_DOWNLOADS = 4 # Максимальное кол-во параллельных загрузок сегментов
 
@@ -197,12 +198,59 @@ async def main(url, result_file, no_pre_download):
             else:
                 print("Не удалось выполнить конвертацию после нескольких попыток.")
 
+
+def har_parser(filename):
+    """Read and print the contents of a file."""
+    try:
+        with open(filename, 'r') as file:
+            data = json.load(file)
+            if "log" in data and "entries" in data["log"]:
+                playlist_urls = []
+                for entry in data["log"]["entries"]:
+                    if "request" in entry and "url" in entry["request"]:
+                        url = entry["request"]["url"]
+                        if "playlist" in url:
+                            playlist_urls.append(url)
+                print(f"Found {len(playlist_urls)} urls.")
+                return playlist_urls
+            else:
+                print("No 'entries' key found in the JSON data.")
+    except FileNotFoundError:
+        print(f"Error: The file {filename} was not found.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Download and process video segments.')
     parser.add_argument('-npd', '--no-pre-download', action='store_true', help='Пропустить предварительную загрузку размеров')
+    parser.add_argument('-a', action='store_true', help='Automaticaly process all .har files in current dir')
+    parser.add_argument('-f', type=str, help='Load urls from .har file')
     args = parser.parse_args()
-
-    while True:
-        url = input("Введите ссылку на плей-лист: ")
-        result_file = input("Введите имя выходного файла: ")
-        asyncio.run(main(url, result_file, args.no_pre_download))
+    
+    
+    if args.f:
+        for count, url in enumerate(har_parser(args.f), start=1):
+            url = str(url)
+            result_file = f"{os.path.splitext(os.path.basename(args.f))[0]}{count}"
+            print("url =", url)
+            print("result_file =", result_file)
+            asyncio.run(main(url, result_file, args.no_pre_download))
+    elif args.a:
+        """Process all .har files in the current directory."""
+        for filename in os.listdir('.'):
+            if filename.endswith('.har'):
+                print("Proceessing ", filename)
+                for count, url in enumerate(har_parser(filename), start=1):
+                    url = str(url)
+                    result_file = f"{os.path.splitext(os.path.basename(filename))[0]}{count}"
+                    print("url =", url)
+                    print("result_file =", result_file)
+                    asyncio.run(main(url, result_file, args.no_pre_download))
+                    
+                os.rename(filename, filename + '.done')
+    else:
+        while True:
+            url = input("Введите ссылку на плей-лист: ")
+            result_file = input("Введите имя выходного файла: ")
+            asyncio.run(main(url, result_file, args.no_pre_download))
